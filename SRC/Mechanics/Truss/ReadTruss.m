@@ -56,13 +56,18 @@ fprintf(IOUT, '               E              A\n');
 sdata.NUME = cdata.NPAR(2);
 sdata.NUMMAT = cdata.NPAR(3);
 NUMMAT = cdata.NPAR(3);
-sdata.E = zeros(NUMMAT, 1);
 sdata.AREA = zeros(NUMMAT, 1);
+sdata.NU = zeros(NUMMAT, 1);    %泊松比
+sdata.RHO = zeros(NUMMAT, 1);   %密度
+sdata.MU = zeros(NUMMAT, 1);    %结构阻尼
 for I = 1:cdata.NPAR(3)
     tmp = str2num(fgetl(IIN));
     N = round(tmp(1));
     sdata.E(N) = tmp(2);
     sdata.AREA(N) = tmp(3);
+    sdata.NU(N) = tmp(4);
+    sdata.RHO(N) = tmp(5);
+    sdata.MU(N) = tmp(6);
     fprintf(IOUT, '%5d    %12.5e  %14.6e\n', N, tmp(2), tmp(3));
 end
 
@@ -122,8 +127,8 @@ end
 sdata.XYZ = XYZ; sdata.MATP = MATP; sdata.LM = LM;
 
 % Clear the memory of X, Y, Z
-sdata.X = double(0);
-sdata.Y = double(0);
-sdata.Z = double(0);
+% sdata.X = double(0);
+% sdata.Y = double(0);
+% sdata.Z = double(0);
 
 end

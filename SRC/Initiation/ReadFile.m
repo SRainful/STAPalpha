@@ -149,6 +149,7 @@ for N = 1:NLCASE
     sdata.IDIRN = IDIRN; 
     sdata.FLOAD = FLOAD; 
     sdata.R = R;
+    sdata.Q = R;
     sdata.V = V;
     cdata.MTIME = MTIME;
     cdata.MDELTAT = MDELTAT;

@@ -30,6 +30,7 @@ classdef SolutionData
         Y;        % double, Y(NUMNP), Y coordinates
         Z;        % double, Z(NUMNP), Z coordinates
         R;        % double, R(NEQ), Load vector
+        Q;        % double, Q(NEQ), Back up of Load vector
         NOD;      % int, NOD(NLOAD), Node number to which this load is applied (1~NUMNP)
         IDIRN;    % int, IDIRN(NLOAD), Degree of freedom number for this load component
                   %                     1 : X-direction;
@@ -45,8 +46,8 @@ classdef SolutionData
         NINIP;    % int, number of integration points in an element
         NDOF;     % int, the DOF of displacement
         NSTIFF;   % int, the number of number in element stiffness matrix
-        XYZ;      % double, XYZ(3*NNODE, NUME), element position
-        NODEOFELE;% int,  NODEOFELE(NNODE, NUME), Save nodal ID for each element
+        XYZ;      % double, XYZ(NDOF*NNODE, NUME), element position
+        POS;      % double ,POS(NEQ) ,free node position at T= 0;
         
         InitCoord;  % double array, integration coordinates
         InitWeight; % double array, integration weights
@@ -61,15 +62,16 @@ classdef SolutionData
         MATP;       % int, MATP(NUME), types of elements
         
         % Solve data
-        NEQ;      % int, Number of equations
-        NWK;      % Number of matrix elements
-        MK;       % Maximum half bandwidth
-        MHT;      % int, MHT(NEQ), Vector of column heights
-        LM;       % int, LM(NDOF*NNODE, NUME), Connectivity matrix
-        MAXA;     % int, MAXA(NEQ)
-        STIFF;    % double, STIFF(NWK), store the elements of initial stiffness matrix
-        MASS = 0; % double, MASS(NWK), store the elements of initial mass matrix
-        DAMP = 0; % double, DAMP(NWK), store the elements of initial damp matrix
+        NEQ;        % int, Number of equations
+        NWK;        % Number of matrix elements
+        MK;         % Maximum half bandwidth
+        MHT;        % int, MHT(NEQ), Vector of column heights
+        LM;         % int, LM(NDOF*NNODE, NUME), Connectivity matrix
+        MAXA;       % int, MAXA(NEQ)
+        STIFF;      % double, STIFF(NWK), store the elements of stiffness matrix
+        STIFFOrigin;% double, sparse,STIFF(NWK), Back up of the Origin Stiff
+        MASS = 0;   % double, sparse,MASS(NEQ), store the elements of initial mass matrix
+        DAMP = 0;   % double, sparse,DAMP(NEQ), store the elements of initial damp matrix
         
         %Initial conditions
         NODVEL;   % int, NODVEL(NVEL), Node number to which this velocity is applied (1~NUMNP)

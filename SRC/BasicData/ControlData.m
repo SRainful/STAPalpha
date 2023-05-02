@@ -18,7 +18,7 @@ classdef ControlData
         NPAR;          % Element group control data
                        %   NPAR(1) - Element type
                        %             1 : Truss element
-                       %             2 /3: Q4 element                       
+                       %             2 : Beam element                       
                        %   NPAR(2) - Number of elements
                        %   NPAR(3) - Number of different sets of material
                        %             and cross-sectional constants
@@ -41,5 +41,6 @@ classdef ControlData
 
         IIN;           % file pointer used for input 输入文件指针
         IOUT;          % file pointer used for output 输出文件指针
+        IDYNA;         % file pointer used for output time integration
     end
 end
