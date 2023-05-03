@@ -30,7 +30,6 @@ classdef SolutionData
         Y;        % double, Y(NUMNP), Y coordinates
         Z;        % double, Z(NUMNP), Z coordinates
         R;        % double, R(NEQ), Load vector
-        Q;        % double, Q(NEQ), Back up of Load vector
         NOD;      % int, NOD(NLOAD), Node number to which this load is applied (1~NUMNP)
         IDIRN;    % int, IDIRN(NLOAD), Degree of freedom number for this load component
                   %                     1 : X-direction;
@@ -41,47 +40,37 @@ classdef SolutionData
         
         
         % Element data
-        NUME;     % int, number of elements    %单元个数
+        NUME;     % int, number of elements
         NNODE;    % int, number of nodes in an element
         NINIP;    % int, number of integration points in an element
         NDOF;     % int, the DOF of displacement
         NSTIFF;   % int, the number of number in element stiffness matrix
-        XYZ;      % double, XYZ(NDOF*NNODE, NUME), element position
-        POS;      % double ,POS(NEQ) ,free node position at T= 0;
+        XYZ;      % double, XYZ(3*NNODE, NUME), element position
         
         InitCoord;  % double array, integration coordinates
         InitWeight; % double array, integration weights
         
         % Material data
-        NUMMAT;     % int, the number of types of material  %不同的材料种类
+        NUMMAT;     % int, the number of types of material 
         E;          % double array, Young's Modulus
         AREA;       % double array, Cross sectional area of truss
-        NU;         % double array, Possion ratio
-        RHO;        % double array, Density
-        MU;         % double array, Damp
+        Iy;         %截面惯性矩Iy
+        Iz;         %截面惯性矩Iz
+        Jx;         %截面极惯性矩Jx
+        NU;         % double array, Possion ratio 
+        RHO;        %密度
+        MU;         %结构阻尼
         MATP;       % int, MATP(NUME), types of elements
         
         % Solve data
-        NEQ;        % int, Number of equations
-        NWK;        % Number of matrix elements
-        MK;         % Maximum half bandwidth
-        MHT;        % int, MHT(NEQ), Vector of column heights
-        LM;         % int, LM(NDOF*NNODE, NUME), Connectivity matrix
-        MAXA;       % int, MAXA(NEQ)
-        STIFF;      % double, STIFF(NWK), store the elements of stiffness matrix
-        STIFFOrigin;% double, sparse,STIFF(NWK), Back up of the Origin Stiff
-        MASS = 0;   % double, sparse,MASS(NEQ), store the elements of initial mass matrix
-        DAMP = 0;   % double, sparse,DAMP(NEQ), store the elements of initial damp matrix
+        NEQ;      % int, Number of equations
+        NWK;      % Number of matrix elements
+        MK;       % Maximum half bandwidth
+        MHT;      % int, MHT(NEQ), Vector of column heights
+        LM;       % int, LM(6, NUME), Connectivity matrix
+        MAXA;     % int, MAXA(NEQ)
+        STIFF;    % double ,STIFF(NWK), store the elements of stiffness matrix
         
-        %Initial conditions
-        NODVEL;   % int, NODVEL(NVEL), Node number to which this velocity is applied (1~NUMNP)
-        IDVEL;    % int, IDVEL(NVEL), Degree of freedom number for this velocity component
-                  %                     1 : X-direction;
-                  %                     2 : Y-direction;
-                  %                     3 : Z-direction;
-        MVEL;     % double, DVEL(NVEL), Magnitude of velocity
-        V;        % double, V(NEQ), velocity vector
-
         % Result data
         DIS;      % double, DIS(NEQ, NLCASE), Displacement of nodes
         STRAIN;   % double, STRAIN(NEQ, NLCASE), Strain
