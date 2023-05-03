@@ -35,9 +35,8 @@ for N = 1:cdata.NUMEG
     fprintf(IOUT, '\n\n E L E M E N T   D E F I N I T I O N\n');
     fprintf(IOUT, ['\n ELEMENT TYPE  . . . . . . . . . . . . .( NPAR(1) ) . . = %10d\n' ...
         '     EQ.1, TRUSS ELEMENTS\n' ...
-        '     EQ.2, PLANE STRESS ELEMENTS\n' ...
-        '     EQ.3, PLANE STRAIN ELEMENTS\n' ...
-        '     EQ.4, NOT AVAILABLE\n' ...
+        '     EQ.2, PLANE STRAIN ELEMENTS\n' ...
+        '     EQ.3, BEAM ELEMENTS\n' ...
         ' NUMBER OF ELEMENTS. . . . . . . . . . .( NPAR(2) ) . . = %10d\n'], ...
         cdata.NPAR(1), cdata.NPAR(2));
 
@@ -45,10 +44,12 @@ for N = 1:cdata.NUMEG
     NPAR1 = cdata.NPAR(1);
     if (NPAR1 == 1) 
         TrussStiff()
-    elseif (NPAR1 == 2||NPAR1 == 3) 
-        BeamStiff()
+    elseif (NPAR1 == 2) 
+         Q4Stiff()
+    elseif (NPAR1 == 3) 
+         BeamStiff()
     else
-        error(' *** ERROR *** No Such Element'); 
+         error(' *** ERROR *** No Such Element'); 
     end
     
     
