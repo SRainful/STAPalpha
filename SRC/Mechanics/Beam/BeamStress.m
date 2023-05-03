@@ -1,81 +1,52 @@
 %* *****************************************************************
-%* - Function of STAPMAT in stiffness phase                        *
+%* - Function of STAPMAT in solver phase                           *
 %*                                                                 *
 %* - Purpose:                                                      *
-%*     Compute the stiffness matrix of Beam                        *
+%*     To calculate stresses                                       *
 %*                                                                 *
-%* - Call procedures:                                              *
-%*     BeamStiff.m - InitBeam()                                    *
-%*     ReadBeam.m - ReadBeam()                                     *
-%*     SRC/Mechanics/Addres.m - Addres()                           *
+%* - Call procedures: None                                         *
 %*                                                                 *
 %* - Called by :                                                   *
-%*     SRC/Mechanics/GetStiff.m                                    *
+%*     SRC/Solver/GetStress.m                                      *
 %*                                                                 *
 %* - Programmed by:                                                *
 %*     Yourself                                                    *
 %*                                                                 *
 %* *****************************************************************
 
-function BeamStiff()
-
-% Init variables of the element
-InitBeam();
-
-% Read Material and Elements
-ReadBeam();
-
-fprintf('Solution phase ...\n\n');
-
-% calculate addresses of diagonal elements
-Addres();
-
-% Data check Or Solve
-global cdata;
-if (cdata.MODEX == 0) 
-    cdata.TIM(3,:) = clock;
-    cdata.TIM(4,:) = clock;
-    cdata.TIM(5,:) = clock;
-    return; 
-end
-
-% Assemble structure stiffness matrix
-Assemble();
-
-end
-
-% ----------------------- Functions -----------------------------------
-
-% Init parameters of beam element
-function InitBeam()
-global sdata;
-sdata.NNODE = 2;
-sdata.NDOF = 6;  % For Euler-Bernoulli Beam
-
-end
-
-% Assemble structure stiffness matrix
-function Assemble()
+function BeamStress(NUM, NG)
 % To be completed
 % Get global data
-global sdata;
+
+
 global cdata;
+global sdata;
+global fname;
 
-sdata.STIFF = zeros(sdata.NWK, 1, 'double');
-
-NUME = sdata.NUME; MATP = sdata.MATP; XYZ = sdata.XYZ;%但只有XY 
-E = sdata.E; AREA = sdata.AREA; Iy = sdata.Iy; Iz = sdata.Iz; Jx = sdata.Jx; NU = sdata.NU; LM = sdata.LM;
+f_name = strcat('.\Data\', fname);
+cdata.IIN = fopen(f_name, 'r');
+IIN = cdata.IIN;
+IOUT = cdata.IOUT;
+NUMNP=cdata.NUMNP;NLOAD=cdata.NLOAD;NUME = sdata.NUME; MATP = sdata.MATP;NUMMAT=sdata.NUMMAT;XYZ = sdata.XYZ;
+E = sdata.E; NU = sdata.NU; LM = sdata.LM;
 G = E./(2*(1+NU));
+U = sdata.DIS(:, NUM);
+
+fprintf(IOUT, ['\n\n  S T R E S S  C A L C U L A T I O N S  F O R  ' ...
+    'E L E M E N T  G R O U P %4d\n\n' ... 
+    '       ELEMENT             FORCE_X1        FORCE_Y1        FORCE_Z1        MOMENT_X1        MOMENT_Y1        MOMENT_Z1        FORCE_X2        FORCE_Y2        FORCE_Z2        MOMENT_X2        MOMENT_Y2        MOMENT_Z2\n' ...
+    '       NUMBER\n'], NG);
+
+% For every element
 for N = 1:NUME
     MTYPE = MATP(N);
-    
+   
 %   compute the length of beam element
     DX = XYZ(1, N) - XYZ(4, N);
     DY = XYZ(2, N) - XYZ(5, N);
     DZ = XYZ(3, N) - XYZ(6, N);
     XL2 = DX*DX + DY*DY + DZ*DZ;
     XL = sqrt(XL2);
-
     
 %   坐标转换矩阵
     T = zeros(12, 12);
@@ -91,11 +62,11 @@ for N = 1:NUME
         CZZ = 0.0;
     
     else
-        CYX = -CXX*CXZ/sqrt(CXX*CXX+CXY*CXY);
-        CYY = -CXY*CXZ/sqrt(CXX*CXX+CXY*CXY);
-        CYZ = sqrt(CXX*CXX+CXY*CXY);
-        CZX = CXY/sqrt(CXX*CXX+CXY*CXY);
-        CZY = -CXX/sqrt(CXX*CXX+CXY*CXY);
+        CYX = -CXX*CXZ/SQRT(CXX*CXX+CXY*CXY);
+        CYY = -CXY*CXZ/SQRT(CXX*CXX+CXY*CXY);
+        CYZ = SQRT(CXX*CXX+CXY*CXY);
+        CZX = CXY/SQRT(CXX*CXX+CXY*CXY);
+        CZY = -CXX/SQRT(CXX*CXX+CXY*CXY);
         CZZ = 0.0;
     end
     T(1,1) = CXX;
@@ -114,6 +85,7 @@ for N = 1:NUME
             T(i+9,j+9) = T(i,j);
         end
     end
+    
 %   计算刚度阵
     S = zeros(12, 12);
     S(1,1) = E(MTYPE)*AREA(MTYPE)/XL;
@@ -151,14 +123,25 @@ for N = 1:NUME
     
     S = T'*S*T;
     
-%   SRC/Mechanics/ADDBAN.m
-    ADDBAN(S, LM(:, N));
+%   计算每个单元的位移
+    UELE = zeros(1,12);
+    for i = 1:12
+        if LM(i, N) > 0
+            UELE(i) = U(LM(i, N));
+        end
+    end
+   
+    FORCE = zeros(1,12);
+%   计算单元内力和力矩
+    for i = 1:12
+        Force_initial = 0;
+        for j = 1:12
+            Force_initial = Force_initial+UELE(j)*S(i,j); 
+        end
+        FORCE(i) = Force_initial;
+    end
     
+    fprintf(IOUT, ' %10d           %13.6e    %13.6e    %13.6e    %13.6e    %13.6e    %13.6e    %13.6e    %13.6e    %13.6e    %13.6e    %13.6e    %13.6e\n', N, FORCE(1), FORCE(2), FORCE(3), FORCE(4), FORCE(5), FORCE(6), FORCE(7), FORCE(8), FORCE(9), FORCE(10), FORCE(11), FORCE(12));
 end
-
-% The third time stamp
-cdata.TIM(3, :) = clock;
-
+% It's better if you can output the results in the TECPLOT form for a wonderful visualization.
 end
-
-

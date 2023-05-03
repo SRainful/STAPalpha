@@ -55,6 +55,9 @@ sdata.NUMMAT = cdata.NPAR(3);
 NUMMAT = cdata.NPAR(3);         %材料种类数
 sdata.E = zeros(NUMMAT, 1);     %杨氏模量
 sdata.AREA = zeros(NUMMAT, 1);  %截面面积
+sdata.Iy = zeros(NUMMAT, 1);    %截面惯性矩Iy（SolutionData里需添加）
+sdata.Iz = zeros(NUMMAT, 1);    %截面惯性矩Iz（SolutionData里需添加）
+sdata.Jx = zeros(NUMMAT, 1);    %截面惯性矩Jx（SolutionData里需添加）
 sdata.NU = zeros(NUMMAT, 1);    %泊松比
 sdata.RHO = zeros(NUMMAT, 1);   %密度
 sdata.MU = zeros(NUMMAT, 1);    %结构阻尼
@@ -64,10 +67,13 @@ for I = 1:NUMMAT
     N = round(tmp(1));
     sdata.E(N) = tmp(2);
     sdata.AREA(N) = tmp(3);
-    sdata.NU(N) = tmp(4);
-    sdata.RHO(N) = tmp(5);
-    sdata.MU(N) = tmp(6);
-    fprintf(IOUT, '%5d    %14.6e  %14.6e  %14.6e  %14.6e  %14.6e\n', N, tmp(2), tmp(3), tmp(4), tmp(5), tmp(6));
+    sdata.Iy(N) = tmp(4);
+    sdata.Iz(N) = tmp(5);
+    sdata.Jx(N) = tmp(6);
+    sdata.NU(N) = tmp(7);
+    sdata.RHO(N) = tmp(8);
+    sdata.MU(N) = tmp(9);
+    fprintf(IOUT, '%5d    %14.6e  %14.6e  %14.6e  %14.6e  %14.6e  %14.6e  %14.6e  %14.6e\n', N, tmp(2), tmp(3), tmp(4), tmp(5), tmp(6), tmp(7), tmp(8), tmp(9));
 end
 
 end
@@ -122,13 +128,19 @@ for N = 1:NUME
 
     fprintf(IOUT, '%10d      %10d    %10d       %5d\n', N, I, J, MTYPE);
 
-%   Compute connectivity matrix
+%   Compute connectivity matrix（这里有改动）
     LM(1, N) = ID(1, I);
-    LM(4, N) = ID(1, J);
+    LM(7, N) = ID(1, J);
     LM(2, N) = ID(2, I);
-    LM(5, N) = ID(2, J);
+    LM(8, N) = ID(2, J);
     LM(3, N) = ID(3, I);
-    LM(6, N) = ID(3, J);
+    LM(9, N) = ID(3, J);
+    LM(4, N) = ID(4, I);
+    LM(10, N) = ID(4, J);
+    LM(5, N) = ID(5, I);
+    LM(11, N) = ID(5, J);
+    LM(6, N) = ID(6, I);
+    LM(12, N) = ID(6, J);
 
 %   Updata column heights and bandwidth
     ColHt(LM(:, N))
