@@ -46,7 +46,7 @@ cdata.MODEX = tmp(4);
 
 if (cdata.NUMNP == 0) return; end
 
-%% Read nodal point data
+%% Read nodal point data(这里有修改)
 InitBasicData();
 % Define local variables to speed
 ID = sdata.ID; X = sdata.X; Y = sdata.Y; Z = sdata.Z;
@@ -55,16 +55,19 @@ for i = 1:cdata.NUMNP
     ID(1, i) = tmp(2);
     ID(2, i) = tmp(3);
     ID(3, i) = tmp(4);
-    X(i) = tmp(5);
-    Y(i) = tmp(6);
-    Z(i) = tmp(7);
+    ID(4, i) = tmp(5);
+    ID(5, i) = tmp(6);
+    ID(6, i) = tmp(7);
+    X(i) = tmp(8);
+    Y(i) = tmp(9);
+    Z(i) = tmp(10);
 end
 sdata.ID = ID; sdata.X = X; sdata.Y = Y; sdata.Z = Z;
-%% Compute the number of equations
+%% Compute the number of equations(这里有修改)
 sdata.IDOrigin = ID;
 NEQ = 0;
 for N=1:cdata.NUMNP
-    for I=1:3
+    for I=1:6
         if (ID(I,N) == 0)
             NEQ = NEQ + 1;
             ID(I,N) = NEQ;
@@ -74,34 +77,17 @@ for N=1:cdata.NUMNP
     end
 end
 sdata.ID = ID;
-sdata.NEQ = NEQ;        
-%% Read load data
+sdata.NEQ = NEQ;
+%% Read load data(这里有修改)
 % Init control data
 NLCASE = cdata.NLCASE;
-R = zeros(NEQ, NLCASE);
-V = zeros(NEQ, NLCASE);
-MTIME = zeros(NLCASE,1);
-MDELTAT = zeros(NLCASE,1);
-ALPHA = zeros(NLCASE,1);
-BETA = zeros(NLCASE,1);
-NVEL = zeros(NLCASE,1);
+sdata.R = zeros(NEQ, NLCASE);
+R = sdata.R;
 % Read data
-for N = 1:NLCASE
+for N = 1:cdata.NLCASE
     tmp = str2num(fgetl(IIN));
     cdata.LL = tmp(1); cdata.NLOAD = tmp(2);
     NLOAD = cdata.NLOAD;
-
-%   Read Time Span and Delta_t of motion
-    MTIME(N) = tmp(3);
-    MDELTAT(N) = tmp(4);
-
-%   Read alpha and beta of Rayleigh Damp
-    ALPHA(N) = tmp(5);
-    BETA(N) = tmp(6);
-
-%   Read number of initial velocity vector
-    NVEL(N) = tmp(7);
-
 %   Init load data
     sdata.NOD = zeros(NLOAD, 1);
     sdata.IDIRN = zeros(NLOAD, 1);
@@ -122,39 +108,7 @@ for N = 1:NLCASE
         II = ID(IDIRN(L), NOD(L));
         if (II > 0) R(II, N) = R(II, N) + FLOAD(L); end
     end
-
-%   Init velocity data
-    NODVEL = zeros(NVEL(N), 1);
-    IDVEL = zeros(NVEL(N), 1);
-    MVEL = zeros(NVEL(N), 1);   
-    
-%   Read Initial velocity
-    if ~(NVEL(N) == 0)
-
-    for J = 1:NVEL(N)
-        tmp = str2num(fgetl(IIN));
-        NODVEL(J) = tmp(1);
-        IDVEL(J) = tmp(2);
-        MVEL(J)= tmp(3);
-    end
-
-%   Compute initial velocity vector    
-    for K = 1:NVEL(N)
-        II = ID(IDVEL(K), NODVEL(K));
-        if (II > 0) V(II, N) = V(II, N) + MVEL(K); end
-    end
-
-    end
-    sdata.NOD = NOD; 
-    sdata.IDIRN = IDIRN; 
-    sdata.FLOAD = FLOAD; 
-    sdata.R = R;
-    sdata.Q = R;
-    sdata.V = V;
-    cdata.MTIME = MTIME;
-    cdata.MDELTAT = MDELTAT;
-    cdata.ALPHA = ALPHA;
-    cdata.BETA = BETA;
+    sdata.NOD = NOD; sdata.IDIRN = IDIRN; sdata.FLOAD = FLOAD; sdata.R = R;
 end
 
 end
@@ -164,13 +118,13 @@ end
 
 % InitBasicData
 function InitBasicData()
-    global cdata;
-    global sdata;
-    
-    cdata.NPAR = zeros(10, 1);
-    
-    sdata.ID = zeros(3,cdata.NUMNP);
-    sdata.X = zeros(cdata.NUMNP, 1);
-    sdata.Y = zeros(cdata.NUMNP, 1);
-    sdata.Z = zeros(cdata.NUMNP, 1);
+global cdata;
+global sdata;
+
+cdata.NPAR = zeros(10, 1);
+
+sdata.ID = zeros(3,cdata.NUMNP);
+sdata.X = zeros(cdata.NUMNP, 1);
+sdata.Y = zeros(cdata.NUMNP, 1);
+sdata.Z = zeros(cdata.NUMNP, 1);
 end

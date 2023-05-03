@@ -73,7 +73,7 @@ for I = 1:1 %cdata.NLCASE
     fprintf(IOUT, '       NUMBER                   MAGNITUDE\n');
     
     for N = 1:NLOAD(I)
-        fprintf(IOUT,'%10d         %4d       %12.5e\n',...
+        fprintf(IOUT,'%10d         %4d       %12.5e',...
             NOD(N), IDIRN(N), FLOAD(N));
     end
 end
