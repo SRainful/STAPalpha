@@ -29,7 +29,6 @@ global sdata;
 NEQ = sdata.NEQ;
 NLCASE = cdata.NLCASE;
 MODEX = cdata.MODEX;
-MTIME = cdata.MTIME;
 sdata.DIS = zeros(NEQ, NLCASE, 'double');
 sdata.STRAIN = zeros(NEQ, NLCASE, 'double');
 sdata.STRESS = zeros(NEQ, NLCASE, 'double');
@@ -37,10 +36,6 @@ sdata.STRESS = zeros(NEQ, NLCASE, 'double');
 % The pre-process of Solution
 % MODEX = 1, LDLTFactor() - ColSol()     
 % MODEX = 2, Stiff2Sparse() - sdata.SPSTIFF \ Sdata.R(:, L)
-
-%Back up the Origin Stiff
-Stiff2Sparse();
-
 if (MODEX == 1) LDLTFactor();
 else SPSTIFF = Stiff2Sparse(); end
 
@@ -50,15 +45,8 @@ cdata.TIM(4,:) = clock;
 for L = 1:NLCASE
 
 %   Solve the equilibrium equations to calculate the displacements
-    if (MODEX == 2)
-        if (MTIME(L) ==0)
-            ColSol(L);               %静力求解
-        else
-            Generalized_Alpha(L);    %时间积分
-        end
-    else 
-        sdata.DIS(:,L) = SPSTIFF \ sdata.R(:,L); 
-    end
+    if (MODEX == 1) ColSol(L);
+    else sdata.DIS(:,L) = SPSTIFF \ sdata.R(:,L); end
     
 %   Print displacements
     WriteDis(L);
@@ -101,8 +89,6 @@ for N = 1:NEQ
 end
 
 SPSTIFF = sparse(IIndex, JIndex, STIFF, NEQ, NEQ);
-%Back up of the Origin Stiff
-sdata.STIFFOrigin = SPSTIFF;
 end
 
 % Print Displacements

@@ -46,7 +46,7 @@ for N = 1:NEQ
     R(N) = R(N) / A(K);
 end
 
-if (NEQ == 1) return; end
+if (NEQ == 1) return; end;
 
 N = NEQ;
 for L = 2:NEQ

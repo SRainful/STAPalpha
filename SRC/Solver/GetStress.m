@@ -31,7 +31,7 @@ for N = 1:NUMEG
     elseif (NPAR1 == 2) 
         Q4Stress(NUM, N)
     elseif (NPAR1 == 3) 
-        % **Stress(NUM, N) by yourself
+        T3Stress(NUM,N)
     else
         error(' *** ERROR *** No Such Element');
     end
