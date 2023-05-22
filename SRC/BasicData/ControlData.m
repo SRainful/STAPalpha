@@ -19,7 +19,7 @@ classdef ControlData
                        %   NPAR(1) - Element type
                        %             1 : Truss element
                        %             2 : Q4 element
-                       %             3 : T3 element
+                       %             3 : Beam element
                        %   NPAR(2) - Number of elements
                        %   NPAR(3) - Number of different sets of material
                        %             and cross-sectional constants
@@ -35,5 +35,7 @@ classdef ControlData
 
         IIN;           % file pointer used for input
         IOUT;          % file pointer used for output
+        TOUT;          % tecplot后处理
+        POUT;          % paraview后处理
     end
 end

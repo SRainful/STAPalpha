@@ -45,6 +45,7 @@ classdef SolutionData
         NINIP;    % int, number of integration points in an element
         NDOF;     % int, the DOF of displacement
         NSTIFF;   % int, the number of number in element stiffness matrix
+        NODEOFELE;
         XYZ;      % double, XYZ(3*NNODE, NUME), element position
         
         InitCoord;  % double array, integration coordinates
