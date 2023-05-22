@@ -63,9 +63,12 @@ global cdata;
 
 sdata.STIFF = zeros(sdata.NWK, 1, 'double');
 
-NUME = sdata.NUME; MATP = sdata.MATP; XYZ = sdata.XYZ;%但只有XY 
+NUME = sdata.NUME; MATP = sdata.MATP; XYZ = sdata.XYZ;
 E = sdata.E; AREA = sdata.AREA; Iy = sdata.Iy; Iz = sdata.Iz; Jx = sdata.Jx; NU = sdata.NU; LM = sdata.LM;
 G = E./(2*(1+NU));
+
+
+
 for N = 1:NUME
     MTYPE = MATP(N);
     

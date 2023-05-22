@@ -47,7 +47,7 @@ if (cdata.NPAR(3) == 0) cdata.NPAR(3) = 1; end
 fprintf(IOUT, '\n M A T E R I A L   D E F I N I T I O N\n');
 fprintf(IOUT, '\n NUMBER OF DIFFERENT SETS OF MATERIAL\n');
 fprintf(IOUT, ' AND CROSS-SECTIONAL  CONSTANTS  . . . .( NPAR(3) ) . . = %10d\n', cdata.NPAR(3));
-fprintf(IOUT, '  SET NUMBER      YOUNG''S MODULUS     CROSS-SECTIONAL     POSSION-RATIO     DENSITY     DAMP\n');
+fprintf(IOUT, '  SET NUMBER      YOUNG''S MODULUS     AREA     Iy     Iz     Jx     POSSION-RATIO     DENSITY     DAMP\n');
 
 % Read material message here
 sdata.NUME = cdata.NPAR(2);
@@ -97,14 +97,14 @@ fprintf(IOUT, '        NUMBER-N           I             J        SET NUMBER\n');
 NUME = cdata.NPAR(2);
 NNODE = sdata.NNODE;
 NDOF = sdata.NDOF;
-NODEOFELE = zeros(NNODE, NUME);
+sdata.NODEOFELE = zeros(NNODE, NUME);%（这里有改动）
 sdata.XYZ = zeros(NDOF*NNODE, NUME);
 sdata.MATP = zeros(NUME, 1);     
 sdata.LM = zeros(NDOF*NNODE, NUME);    
 sdata.MHT = zeros(sdata.NEQ, 1);
 
 X = sdata.X; Y = sdata.Y; Z = sdata.Z; ID = sdata.ID;
-XYZ = sdata.XYZ; MATP = sdata.MATP; LM = sdata.LM;
+NODEOFELE = sdata.NODEOFELE; XYZ = sdata.XYZ; MATP = sdata.MATP; LM = sdata.LM;%（这里有改动）
 
 for N = 1:NUME
 
@@ -146,10 +146,10 @@ for N = 1:NUME
     ColHt(LM(:, N))
 end
 
-sdata.XYZ = XYZ; sdata.MATP = MATP; sdata.LM = LM;
+sdata.NODEOFELE = NODEOFELE; sdata.XYZ = XYZ; sdata.MATP = MATP; sdata.LM = LM;%（这里有改动）
 
 % Clear the memory of X, Y, Z
-sdata.X = double(0);
-sdata.Y = double(0);
-sdata.Z = double(0);
+% sdata.X = double(0);
+% sdata.Y = double(0);
+% sdata.Z = double(0);
 end

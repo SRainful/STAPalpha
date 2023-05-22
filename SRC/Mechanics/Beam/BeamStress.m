@@ -27,8 +27,8 @@ f_name = strcat('.\Data\', fname);
 cdata.IIN = fopen(f_name, 'r');
 IIN = cdata.IIN;
 IOUT = cdata.IOUT;
-NUMNP=cdata.NUMNP;NLOAD=cdata.NLOAD;NUME = sdata.NUME; MATP = sdata.MATP;NUMMAT=sdata.NUMMAT;XYZ = sdata.XYZ;
-E = sdata.E; NU = sdata.NU; LM = sdata.LM;
+NUMNP=cdata.NUMNP;NLOAD=cdata.NLOAD;NODEOFELE = sdata.NODEOFELE;NUME = sdata.NUME; MATP = sdata.MATP;NUMMAT=sdata.NUMMAT;XYZ = sdata.XYZ;
+E = sdata.E; AREA = sdata.AREA; Iy = sdata.Iy; Iz = sdata.Iz; Jx = sdata.Jx; NU = sdata.NU; LM = sdata.LM;
 G = E./(2*(1+NU));
 U = sdata.DIS(:, NUM);
 
@@ -37,6 +37,8 @@ fprintf(IOUT, ['\n\n  S T R E S S  C A L C U L A T I O N S  F O R  ' ...
     '       ELEMENT             FORCE_X1        FORCE_Y1        FORCE_Z1        MOMENT_X1        MOMENT_Y1        MOMENT_Z1        FORCE_X2        FORCE_Y2        FORCE_Z2        MOMENT_X2        MOMENT_Y2        MOMENT_Z2\n' ...
     '       NUMBER\n'], NG);
 
+GaussianCollection = zeros(3,NUME);
+StressCollection = zeros(6,NUME);
 % For every element
 for N = 1:NUME
     MTYPE = MATP(N);
@@ -62,11 +64,11 @@ for N = 1:NUME
         CZZ = 0.0;
     
     else
-        CYX = -CXX*CXZ/SQRT(CXX*CXX+CXY*CXY);
-        CYY = -CXY*CXZ/SQRT(CXX*CXX+CXY*CXY);
-        CYZ = SQRT(CXX*CXX+CXY*CXY);
-        CZX = CXY/SQRT(CXX*CXX+CXY*CXY);
-        CZY = -CXX/SQRT(CXX*CXX+CXY*CXY);
+        CYX = -CXX*CXZ/sqrt(CXX*CXX+CXY*CXY);
+        CYY = -CXY*CXZ/sqrt(CXX*CXX+CXY*CXY);
+        CYZ = sqrt(CXX*CXX+CXY*CXY);
+        CZX = CXY/sqrt(CXX*CXX+CXY*CXY);
+        CZY = -CXX/sqrt(CXX*CXX+CXY*CXY);
         CZZ = 0.0;
     end
     T(1,1) = CXX;
@@ -85,7 +87,6 @@ for N = 1:NUME
             T(i+9,j+9) = T(i,j);
         end
     end
-    
 %   计算刚度阵
     S = zeros(12, 12);
     S(1,1) = E(MTYPE)*AREA(MTYPE)/XL;
@@ -142,6 +143,11 @@ for N = 1:NUME
     end
     
     fprintf(IOUT, ' %10d           %13.6e    %13.6e    %13.6e    %13.6e    %13.6e    %13.6e    %13.6e    %13.6e    %13.6e    %13.6e    %13.6e    %13.6e\n', N, FORCE(1), FORCE(2), FORCE(3), FORCE(4), FORCE(5), FORCE(6), FORCE(7), FORCE(8), FORCE(9), FORCE(10), FORCE(11), FORCE(12));
+%     GaussianCollection(:,N) = 0.5*(XYZ(4:6,N)+XYZ(1:3,N));
+    %StressCollection([1,2,3,5,6,4],N) = 0.5*(FORCE(7:12)-FORCE(1:6))/AREA(MATP(N));
+    StressCollection([1,2,3,5,6,4],N) = 0.5*(FORCE(7:12)-FORCE(1:6));
 end
 % It's better if you can output the results in the TECPLOT form for a wonderful visualization.
+NODEOFELE = NODEOFELE';
+PostProcessor(NODEOFELE, 1, StressCollection);%（NODEOFELE可能要存）
 end
