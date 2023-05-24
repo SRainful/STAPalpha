@@ -46,7 +46,7 @@ cdata.MODEX = tmp(4);
 
 if (cdata.NUMNP == 0) return; end
 
-%% Read nodal point data
+%% Read nodal point data%(改动)
 InitBasicData();
 % Define local variables to speed
 ID = sdata.ID; X = sdata.X; Y = sdata.Y; Z = sdata.Z;
@@ -55,16 +55,19 @@ for i = 1:cdata.NUMNP
     ID(1, i) = tmp(2);
     ID(2, i) = tmp(3);
     ID(3, i) = tmp(4);
-    X(i) = tmp(5);
-    Y(i) = tmp(6);
-    Z(i) = tmp(7);
+    ID(4, i) = tmp(5);
+    ID(5, i) = tmp(6);
+    ID(6, i) = tmp(7);
+    X(i) = tmp(8);
+    Y(i) = tmp(9);
+    Z(i) = tmp(10);
 end
 sdata.ID = ID; sdata.X = X; sdata.Y = Y; sdata.Z = Z;
 %% Compute the number of equations
 sdata.IDOrigin = ID;
 NEQ = 0;
 for N=1:cdata.NUMNP
-    for I=1:3
+    for I=1:6%(改动)
         if (ID(I,N) == 0)
             NEQ = NEQ + 1;
             ID(I,N) = NEQ;
@@ -75,7 +78,7 @@ for N=1:cdata.NUMNP
 end
 sdata.ID = ID;
 sdata.NEQ = NEQ;        
-%% Read load data
+%% Read load data%(改动)
 % Init control data
 NLCASE = cdata.NLCASE;
 R = zeros(NEQ, NLCASE);

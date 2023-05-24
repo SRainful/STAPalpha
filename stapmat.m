@@ -20,11 +20,13 @@ AddPath();
 % Define Global Variables
 global cdata;
 global sdata;
+global fname;
+
 cdata = ControlData;
 sdata = SolutionData;
 
 % Read InPut file
-fname = '2_1_b.in';              % Specify the file name
+fname = 'Beam3.in';              % Specify the file name
 ReadFile(fname);
 
 % Write basic data of program 
@@ -88,4 +90,6 @@ function Finalize()
     
     fclose(cdata.IIN);
     fclose(cdata.IOUT);
+    fclose(cdata.TOUT);%(改动)
+    fclose(cdata.POUT);%(改动)
 end

@@ -45,9 +45,10 @@ classdef SolutionData
         NNODE;    % int, number of nodes in an element
         NINIP;    % int, number of integration points in an element
         NDOF;     % int, the DOF of displacement
+        NODEOFELE;%（改动）
         NSTIFF;   % int, the number of number in element stiffness matrix
         XYZ;      % double, XYZ(NDOF*NNODE, NUME), element position
-        POS;      % double ,POS(NEQ) ,free node position at T= 0;
+        POS;      % double ,POS(NEQ) ,free node position at T= 0;%(改动)
         
         InitCoord;  % double array, integration coordinates
         InitWeight; % double array, integration weights
@@ -56,6 +57,9 @@ classdef SolutionData
         NUMMAT;     % int, the number of types of material  %不同的材料种类
         E;          % double array, Young's Modulus
         AREA;       % double array, Cross sectional area of truss
+        Iy;         %截面惯性矩Iy%(改动)
+        Iz;         %截面惯性矩Iz
+        Jx;         %截面极惯性矩Jx
         NU;         % double array, Possion ratio
         RHO;        % double array, Density
         MU;         % double array, Damp
@@ -69,11 +73,11 @@ classdef SolutionData
         LM;         % int, LM(NDOF*NNODE, NUME), Connectivity matrix
         MAXA;       % int, MAXA(NEQ)
         STIFF;      % double, STIFF(NWK), store the elements of stiffness matrix
-        STIFFOrigin;% double, sparse,STIFF(NWK), Back up of the Origin Stiff
-        MASS = 0;   % double, sparse,MASS(NEQ), store the elements of initial mass matrix
-        DAMP = 0;   % double, sparse,DAMP(NEQ), store the elements of initial damp matrix
+        STIFFOrigin;% double, sparse,STIFF(NWK), Back up of the Origin Stiff%(改动)
+        MASS = 0;   % double, sparse,MASS(NEQ), store the elements of initial mass matrix%(改动)
+        DAMP = 0;   % double, sparse,DAMP(NEQ), store the elements of initial damp matrix%(改动)
         
-        %Initial conditions
+        %Initial conditions%(改动)
         NODVEL;   % int, NODVEL(NVEL), Node number to which this velocity is applied (1~NUMNP)
         IDVEL;    % int, IDVEL(NVEL), Degree of freedom number for this velocity component
                   %                     1 : X-direction;

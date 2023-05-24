@@ -39,7 +39,7 @@ sdata.STRESS = zeros(NEQ, NLCASE, 'double');
 % MODEX = 2, Stiff2Sparse() - sdata.SPSTIFF \ Sdata.R(:, L)
 
 %Back up the Origin Stiff
-Stiff2Sparse();
+Stiff2Sparse();%（改动）
 
 if (MODEX == 1) LDLTFactor();
 else SPSTIFF = Stiff2Sparse(); end
@@ -47,7 +47,7 @@ else SPSTIFF = Stiff2Sparse(); end
 cdata.TIM(4,:) = clock;
 
 % Solve 
-for L = 1:NLCASE
+for L = 1:NLCASE%（改动）
 
 %   Solve the equilibrium equations to calculate the displacements
     if (MODEX == 2)
@@ -116,17 +116,20 @@ NUMNP = cdata.NUMNP;
 DIS = sdata.DIS(:, NUM); ID = sdata.ID;
 
 fprintf(IOUT, '\n\n LOAD CASE %3d', NUM);
-fprintf(IOUT, ['\n\n D I S P L A C E M E N T S\n' ...
-    '\n       NODE           X-DISPLACEMENT    Y-DISPLACEMENT    Z-DISPLACEMENT\n']);
+fprintf(IOUT, ['\n\n D I S P L A C E M E N T S\n' ...%（改动）
+    '\n       NODE           X-DISPLACEMENT    Y-DISPLACEMENT    Z-DISPLACEMENT    X-ROTATION    Y-ROTATION    Z-ROTATION\n']);
 
-D = zeros(3, 1, 'double');
+D = zeros(6, 1, 'double');
 for II = 1:NUMNP
     D(:) = 0;
     if (ID(1, II) ~= 0) D(1) = DIS(ID(1, II)); end
     if (ID(2, II) ~= 0) D(2) = DIS(ID(2, II)); end
     if (ID(3, II) ~= 0) D(3) = DIS(ID(3, II)); end
+    if (ID(4, II) ~= 0) D(4) = DIS(ID(4, II)); end
+    if (ID(5, II) ~= 0) D(5) = DIS(ID(5, II)); end
+    if (ID(6, II) ~= 0) D(6) = DIS(ID(6, II)); end
     
-    fprintf(IOUT, ' %10d        %18.6e%18.6e%18.6e\n', II, D(1), D(2), D(3));
+    fprintf(IOUT, ' %10d        %18.6e%18.6e%18.6e%18.6e%18.6e%18.6e\n', II, D(1), D(2), D(3), D(4), D(5), D(6));
 end
 
 end

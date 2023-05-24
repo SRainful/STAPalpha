@@ -28,8 +28,8 @@ for N = 1:NUMEG
     NPAR1 = cdata.NPAR(1);
     if (NPAR1 == 1) 
         TrussStress(NUM, N)
-    elseif (NPAR1 == 2) 
-        Q4Stress(NUM, N)
+    elseif (NPAR1 == 2) %(改动)
+        BeamStress(NUM, N)
     elseif (NPAR1 == 3) 
         % **Stress(NUM, N) by yourself
     else

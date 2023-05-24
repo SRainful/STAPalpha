@@ -27,7 +27,7 @@ classdef ControlData
         LL;            % Load case number
         NLOAD;         % The number of concentrated loads applied in this load case
         
-        %Time integral ControlData
+        %Time integral ControlData%(改动)
         MTIME;         % The time span of motion ; unit : s ; 0 - Static solution , Other - Time integral
         MDELTAT;       % The time step of integration; unit : s; MDELTAT(NLCASE,1)
         ALPHA;         % Rayleigh Damp parameter alpha, ALPHA(NLCASE,1)
@@ -42,5 +42,7 @@ classdef ControlData
         IIN;           % file pointer used for input 输入文件指针
         IOUT;          % file pointer used for output 输出文件指针
         IDYNA;         % file pointer used for output time integration
+        TOUT;          % tecplot后处理%(改动)
+        POUT;          % paraview后处理%(改动)
     end
 end

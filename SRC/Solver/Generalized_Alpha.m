@@ -69,16 +69,28 @@ for N = 1 : NUME
     W = MRHO * MAREA * DL;
 
 %   Assemble concentrate mass matrix
-    for I = 1:NDOF
+    for I = 1:3
         F = LM(I,N);
         if (F > 0)
             MASS(F) = MASS(F) + W/2;
+        end
+    end
+    for I = 4:NDOF
+        F = LM(I,N);
+        if (F > 0)
+            MASS(F) = 1e-3;
         end
     end
     for J = 1+NDOF : 3+NDOF
         F = LM(J,N);
         if (F > 0)
             MASS(F) = MASS(F) + W/2;
+        end
+    end
+    for J = 4+NDOF:2*NDOF
+        F = LM(I,N);
+        if (F > 0)
+            MASS(F) = 1e-3;
         end
     end
 end
@@ -142,6 +154,7 @@ function TimeIntegral(L)
 global cdata;
 global sdata;
 
+
 % Initial STIFF,MASS,DAMP matrix
 K = sdata.STIFFOrigin;
 M = sdata.MASS;
@@ -155,7 +168,13 @@ V = sdata.V;
 POS = sdata.POS;
 X = zeros(sdata.NEQ,1);
 A = M\(Q-K*X-C*V);
+%A = pinv(full(M))*(Q-K*X-C*V);
 
+% Minv = zeros(sdata.NEQ,sdata.NEQ);
+% for i = 1:sdata.NEQ
+%     Minv(i,i) = 1/M(i,i);
+% end
+% A = Minv*(Q-K*X-C*V);
 
 % Integral parameters
 T = cdata.MTIME(L);
@@ -178,7 +197,7 @@ c4 = ck*gamma/beta-1;
 c5 = ck*(gamma/(2*beta)-1)*Dt;
 
 % Integral process
-cdata.IDYNA = fopen('.\Data\DYNA.OUT', 'w');
+cdata.IDYNA = fopen('.\Data\Beam3.OUT', 'w');
 IDYNA = cdata.IDYNA;
 ID = sdata.ID;
 XI = sdata.X;
@@ -186,12 +205,12 @@ YI = sdata.Y;
 ZI = sdata.Z;
 
 fprintf(IDYNA, 'T I M E   A N D   N O D A L   P O S I T I O N   D A T A \n\n');
-fprintf(IDYNA, '       TIME       NODE NUMBER             POSITION\n');
-fprintf(IDYNA, '                                   X          Y          Z\n');
+fprintf(IDYNA, '       TIME       NODE NUMBER             POSITION                        ROTATION\n');
+fprintf(IDYNA, '                                   X          Y          Z          RX          RY          RZ\n');
 
 for I = 1:length(STEPT)
 
-    D = zeros(3, 1, 'double');
+    D = zeros(6, 1, 'double');%（改动）
     for NOD = 1 : cdata.NUMNP
         D(:) = 0;
         if (ID(1, NOD) ~= 0) 
@@ -211,12 +230,30 @@ for I = 1:length(STEPT)
         else
             D(3) = ZI(NOD);
         end
-        fprintf(IDYNA, '       %.3f      %6d      %10.3f%10.3f%10.3f\n' ,...
-                STEPT(I),NOD,D(1),D(2),D(3));
+        
+        if (ID(4, NOD) ~= 0) 
+            D(4) = X(ID(4, NOD));
+        else
+            D(4) = 0;
+        end
+
+        if (ID(5, NOD) ~= 0) 
+            D(5) = X(ID(5, NOD));
+        else
+            D(5) = 0;
+        end
+
+        if (ID(6, NOD) ~= 0) 
+            D(6) = X(ID(6, NOD));
+        else
+            D(6) = 0;
+        end
+        fprintf(IDYNA, '       %.3f      %6d      %18.6e%18.6e%18.6e%18.6e%18.6e%18.6e\n' ,...
+                STEPT(I),NOD,D(1),D(2),D(3),D(4),D(5),D(6));
     end
 
     Kb = ck*K + c0*M + c1*C;
-    Qb = Q - Af*K*A + M*(c0*X + c2*V + c3*A) + C*(c1*X + c4*V + c5*A);
+    Qb = Q - Af*K*X + M*(c0*X + c2*V + c3*A) + C*(c1*X + c4*V + c5*A);
     % t + Δt 
     Xw = Kb \ Qb;
     Vw = gamma/(beta*Dt)*(Xw - X) + (1-gamma/beta)*V + (1-gamma/(2*beta))*Dt*A;
@@ -234,3 +271,16 @@ end
 
 
 
+% function X = pinvs(A,tol)
+% [U,S,V] = svds(A,'econ');
+% s = diag(S);
+% if nargin < 2
+%     tol = max(size(A)) * eps(norm(s,inf));
+% end
+% r1 = sum(s > tol)+1;
+% V(:,r1:end) = [];
+% U(:,r1:end) = [];
+% s(r1:end) = [];
+% s = 1./s(:);
+% X = (V.*s.')*U';
+% end
